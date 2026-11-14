@@ -27,7 +27,7 @@ from .config import Config
 
 PRIMITIVES = {
     "read_notifications", "read_sms", "read_screen", "tap", "type_text", "swipe",
-    "open_app", "press_key", "push_file", "open_media", "compose_sms", "agent_run",
+    "open_app", "press_key", "push_file", "open_media", "compose_sms", "agent_run", "clear_field",
 }
 
 NOISY_PACKAGES = {"android", "com.android.systemui", "com.android.vending", "com.google.android.gms"}

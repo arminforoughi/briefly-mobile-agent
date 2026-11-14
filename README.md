@@ -77,6 +77,24 @@ There are two modes, selected with the toggle in the header:
   hosted agent saves the brief as a Messaging draft. A run takes about 2.5 min and 8 of 50 steps.
   It saves a draft only; set `DELIVER_SEND=1` to actually send.
 
+### 💬 Talk back: reply and order, with a human in the loop
+
+Under the voice brief, the **Ask Briefly** panel takes typed or spoken commands. The 🎤 button uses Chrome's speech
+recognition. One-tap suggestions come from the triage, for example *"Reply to Dana: On it, you'll have it before 2pm"*.
+
+* **Reply / text:** for example "Reply to Dana: on it" or "tell Mom Sunday works". The agent opens the thread on the phone
+  and types the reply. If the box already holds a draft, it clears it first: long-press, Select all, delete.
+* **Order food:** for example "order pad thai from Thai Basil on DoorDash" or "get me a burrito bowl". The agent searches,
+  adds the dishes to the cart and opens checkout.
+* **The confirmation gate:** the agent stops at the last screen and shows a card, such as *Send this to Dana?* or
+  *Place order · $22.56*. Nothing is sent or bought until you press Confirm. Cancel backs out and saves the message
+  as a draft, or leaves the order unplaced. Afterwards Briefly speaks the result in the Kokoro voice.
+
+Mock mode uses a simulated DoorDash with fake prices, so no real charge is possible. In live mode, replies run on the
+Pixel. DoorDash only works live once the app is installed and signed in on the PhoneUse device; until then the agent
+says so.
+The code is in [`briefing_agent/actions.py`](briefing_agent/actions.py).
+
 To seed the live phone with demo conversations, run this once:
 
 ```bash

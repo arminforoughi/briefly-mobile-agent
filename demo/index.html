@@ -181,6 +181,88 @@ main{display:grid;grid-template-columns:400px minmax(0,1fr) 440px;gap:18px;paddi
 .pills{display:flex;gap:8px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:rgba(74,222,128,.12);color:var(--ok);font-weight:600;font-size:12.5px;animation:slide .35s ease}
 .muted{color:var(--dim);font-size:13px}
+/* ── ask / chat ─────────────────────────── */
+.ask{border-color:#24364a;background:linear-gradient(160deg,rgba(79,209,255,.07),transparent 60%),var(--panel)}
+.chat{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto;margin-bottom:10px;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.msg{max-width:88%;padding:8px 12px;border-radius:14px;font-size:13.5px;line-height:1.45;animation:slide .3s ease}
+.msg.me{align-self:flex-end;background:linear-gradient(135deg,#2563eb,#4f46e5);border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.bot .spk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--llm);color:#0a0a14;font-size:9px;margin-right:6px;vertical-align:-4px;cursor:pointer}
+.typing{align-self:flex-start;color:var(--muted);font-size:12.5px;font-family:var(--mono)}
+.typing::after{content:"";display:inline-block;width:10px;height:10px;margin-left:8px;border:2px solid var(--phone);border-right-color:transparent;border-radius:50%;vertical-align:-1px;animation:spin .7s linear infinite}
+.confirm{align-self:stretch;border:1px solid #3b4a63;background:#0d1520;border-radius:14px;padding:12px 14px;animation:slide .3s ease;box-shadow:0 0 0 1px rgba(251,191,36,.15),0 10px 30px -12px rgba(251,191,36,.35)}
+.confirm .ct{font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.confirm .ct::before{content:"✋";font-size:15px}
+.confirm table{width:100%;border-collapse:collapse;font-size:13px}
+.confirm td{padding:3px 0;color:var(--muted);vertical-align:top}
+.confirm td:last-child{text-align:right;color:var(--text);padding-left:12px}
+.confirm td.full{color:var(--text);text-align:left;white-space:pre-wrap}
+.confirm .tot td{border-top:1px solid var(--line2);padding-top:7px;font-weight:700;color:var(--text)}
+.confirm .note{font-size:11.5px;color:var(--dim);margin-top:6px}
+.confirm .btns{display:flex;gap:8px;margin-top:10px}
+.confirm .btns button{flex:1;padding:9px;border-radius:10px;font-weight:700;font-size:13px}
+.confirm .yes{background:linear-gradient(135deg,#22c55e,#16a34a);color:#03140a}
+.confirm .no{background:var(--panel2);border:1px solid var(--line2);color:var(--muted)}
+.confirm.done .btns{display:none}
+.confirm .res{display:none;margin-top:8px;font-weight:700;font-size:12.5px}
+.confirm.done .res{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chips button{font-size:12px;padding:6px 10px;border-radius:999px;background:var(--panel2);border:1px solid var(--line2);color:var(--text);text-align:left;transition:.15s}
+.chips button:hover{border-color:var(--phone);color:#fff}
+.askbar{display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:5px}
+.askbar:focus-within{border-color:var(--phone);box-shadow:var(--glow)}
+.askbar input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:14px;padding:6px 4px}
+.askbar .mic,.askbar .go{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;flex:none;font-size:15px}
+.askbar .mic{background:var(--line)}
+.askbar .mic.rec{background:var(--high);animation:pulse 1.2s infinite}
+.askbar .go{background:linear-gradient(135deg,#4fd1ff,#7c8cff);color:#04121b;font-weight:800}
+
+/* ── phone: messages thread + DoorDash (mock) ── */
+.thread{background:#f3f4f6;color:#111}
+.thead{background:#689f38;color:#fff;padding:8cqh 5cqw 2cqh;margin-top:-6cqh;display:flex;align-items:center;gap:3cqw}
+.thead b{display:block;font-size:4.6cqw} .thead small{font-size:3.2cqw;opacity:.85}
+.bub{max-width:72%;margin:2.4cqw 4cqw;padding:2.8cqw 3.6cqw;border-radius:4.5cqw;font-size:3.4cqw;line-height:1.4;animation:vin .35s ease both}
+.bub.in{background:#fff;border-bottom-left-radius:1cqw;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.bub.out{background:#7cb342;color:#fff;margin-left:auto;border-bottom-right-radius:1cqw}
+.dlv{text-align:right;margin:0 5cqw;font-size:2.8cqw;color:#4a7d2a;font-weight:600}
+.compose{position:absolute;left:3cqw;right:16cqw;bottom:2.6cqh;background:#fff;border-radius:6cqw;padding:2.6cqw 4cqw;font-size:3.4cqw;color:#222;min-height:10cqw;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.compose.empty{color:#999}
+.dd{background:#fff;color:#191919}
+.ddh{background:#eb1700;color:#fff;padding:7cqh 5cqw 3cqh;margin-top:-6cqh}
+.ddh b{font-size:6cqw;letter-spacing:-.02em;display:block;margin-bottom:2cqh}
+.search{background:#fff;color:#333;border-radius:6cqw;padding:2.4cqw 4cqw;font-size:3.6cqw}
+.search i{display:inline-block;width:.5cqw;height:4cqw;background:#eb1700;vertical-align:-.6cqw;margin-left:.4cqw;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.store{display:flex;gap:3cqw;align-items:center;padding:3cqw 5cqw;border-bottom:1px solid #eee;animation:vin .35s ease both}
+.store.hit{background:#fff5f4}
+.thumb{width:16cqw;height:16cqw;border-radius:3cqw;display:grid;place-items:center;font-size:8cqw;background:linear-gradient(135deg,#ffe3d6,#ffd1c9)}
+.store b{font-size:3.8cqw;display:block} .store small{font-size:3cqw;color:#666}
+.hero{height:24cqh;display:grid;place-items:center;font-size:18cqw;background:linear-gradient(135deg,#ffb199,#ff0844)}
+.sname{padding:3cqw 5cqw 1cqw;font-size:5.4cqw;font-weight:700}
+.smeta{padding:0 5cqw 2cqw;font-size:3.2cqw;color:#666}
+.dish{display:flex;align-items:center;justify-content:space-between;padding:3.2cqw 5cqw;border-top:1px solid #f0f0f0;font-size:3.6cqw}
+.dish small{display:block;color:#666;font-size:3.2cqw}
+.add{width:8cqw;height:8cqw;border-radius:50%;background:#f1f1f1;display:grid;place-items:center;font-weight:700;font-size:4.4cqw}
+.add.on{background:#eb1700;color:#fff;animation:vin .3s ease}
+.ddbar{position:absolute;left:4cqw;right:4cqw;bottom:3cqh;background:#eb1700;color:#fff;border-radius:7cqw;padding:3.4cqw;text-align:center;font-weight:700;font-size:3.8cqw;animation:vin .3s ease}
+.ddbar.off{background:#ddd;color:#888}
+.co{padding:4cqw 5cqw;font-size:3.5cqw}
+.co h4{font-size:5.4cqw;margin:2cqh 0 3cqw}
+.co .addr{background:#f6f6f6;border-radius:3cqw;padding:3cqw;margin-bottom:3cqw;font-size:3.3cqw}
+.co .ln{display:flex;justify-content:space-between;padding:1.4cqw 0}
+.co .ln.f{color:#666}
+.co .ln.t{border-top:1px solid #eee;margin-top:2cqw;padding-top:3cqw;font-weight:700;font-size:4cqw}
+.placed{background:#fff;color:#191919;text-align:center}
+.placed .dtop{background:#eb1700;color:#fff;padding:12cqh 5cqw 6cqh;margin-top:-6cqh}
+.tick{width:18cqw;height:18cqw;margin:0 auto 3cqh;border-radius:50%;background:#fff;color:#eb1700;display:grid;place-items:center;font-size:10cqw;font-weight:800;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(0)}}
+.placed .dtop b{font-size:6cqw;display:block}
+.eta{font-size:11cqw;font-weight:800;margin-top:5cqh;letter-spacing:-.03em}
+.track{display:flex;justify-content:space-between;margin:4cqh 8cqw 0;font-size:3cqw;color:#999}
+.track span.on{color:#eb1700;font-weight:700}
+.trackbar{height:1.4cqw;margin:2cqh 8cqw;background:#eee;border-radius:1cqw;overflow:hidden}
+.trackbar i{display:block;height:100%;width:34%;background:#eb1700;animation:fill 1.5s ease}
+
 @media (max-width:1200px){main{grid-template-columns:340px minmax(0,1fr)} .right{grid-column:1/-1}}
 </style>
 </head>
@@ -234,6 +316,16 @@ main{display:grid;grid-template-columns:400px minmax(0,1fr) 440px;gap:18px;paddi
       <div class="script" id="script"><span class="muted">The spoken brief appears here once the agent writes it.</span></div>
       <audio id="audio" preload="auto"></audio>
     </div>
+    <div class="card ask">
+      <h3>Ask Briefly <span class="count">reply · order · act</span></h3>
+      <div class="chat" id="chat"><div class="muted">Tell the agent what to do next. It drives the phone and asks before anything is sent or bought.</div></div>
+      <div class="chips" id="chips"></div>
+      <form class="askbar" id="askf" autocomplete="off">
+        <button type="button" class="mic" id="mic" title="Speak a command">🎤</button>
+        <input id="ask" placeholder="Reply to Dana… or order lunch on DoorDash">
+        <button class="go" title="Send">➤</button>
+      </form>
+    </div>
     <div class="card"><h3>Triage <span class="count" id="ic"></span></h3><div id="items"><div class="muted">Actionable items extracted from the phone.</div></div></div>
     <div class="card"><h3>Research</h3><div id="research"><div class="muted">Background on topics found in your messages.</div></div></div>
     <div class="card"><h3>Delivered</h3><div class="pills" id="deliv"><span class="muted">—</span></div></div>
@@ -267,7 +359,7 @@ function reset(meta) {
   $("#play").disabled = true; $("#audio").removeAttribute("src"); autoplayed = false; errs = 0; running = {};
   $("#errs").textContent = 0; $("#ic").textContent = ""; $("#tc").textContent = "";
   document.querySelectorAll(".ph").forEach(p => p.className = "ph");
-  coord = meta.coord; $("#max").textContent = meta.max_steps; $("#llm").textContent = meta.llm;
+  coord = meta.coord; $("#max").textContent = meta.max_steps; $("#llm").textContent = meta.llm; setChips(DEFAULT_CHIPS);
   setBudget(0, meta.max_steps);
   t0 = performance.now(); clearInterval(timer);
   timer = setInterval(() => $("#clock").textContent = ((performance.now() - t0) / 1000).toFixed(1) + "s", 100);
@@ -283,7 +375,7 @@ function row(html, cls = "") {
 }
 
 function setPhase(name) {
-  const m = name.match(/PHASE (\d)/); if (!m) return; const p = +m[1];
+  const m = name.match(/PHASE (\d)/); if (!m) { row(esc(name), "phase"); return; } const p = +m[1];
   document.querySelectorAll(".ph").forEach(el => { const n = +el.dataset.p; el.className = "ph " + (n < p ? "done" : n === p ? "on" : ""); });
   row(esc(name.replace(/PHASE \d · /, "")), "phase");
 }
@@ -301,7 +393,7 @@ function tapRipple(args) {
 const sb = (dark) => `<div class="sb" style="color:${dark ? "#fff" : "#111"}"><span>9:41</span><span>▾ ◢ ▮</span></div>`;
 const COLORS = ["#e8590c", "#1c7ed6", "#2f9e44", "#ae3ec9", "#f08c00", "#0ca678"];
 const avatar = (s, i) => `<div class="av" style="background:${COLORS[i % COLORS.length]}">${esc((s.match(/[A-Za-z]/) || ["?"])[0].toUpperCase())}</div>`;
-const APPNAMES = {"com.google.android.gm": ["Gmail", "#fff", "#d93025"], "com.android.messaging": ["Messaging", "#fff", "#4a7d2a"], "com.google.android.apps.messaging": ["Messages", "#fff", "#1a73e8"]};
+const APPNAMES = {"com.dd.doordash": ["DoorDash", "#eb1700", "#fff"], "com.google.android.gm": ["Gmail", "#fff", "#d93025"],"com.android.messaging": ["Messaging", "#fff", "#4a7d2a"], "com.google.android.apps.messaging": ["Messages", "#fff", "#1a73e8"]};
 
 const VIEWS = {
   home: () => `<div class="view home">${sb(1)}<div class="clock">9:41</div><div class="date">Friday, November 13</div>
@@ -319,7 +411,26 @@ const VIEWS = {
   player: v => `<div class="view player">${sb(1)}<div class="art"><span>🎙️</span></div><div style="font-weight:700;font-size:5cqw">Your briefing</div>
     <div style="opacity:.7;font-size:3.6cqw">Briefly · ${esc(v.file)}</div><div class="wave">${Array.from({length: 24}, (_, i) => `<i style="animation-delay:${(i * 73) % 900}ms"></i>`).join("")}</div></div>`,
   image: v => `<div class="view"><img src="${esc(v.url)}" alt="phone screen"></div>`,
+  thread: v => `<div class="view thread">${sb(1)}<div class="thead">${avatar(v.name, 1)}<div><b>${esc(v.name)}</b><small>${esc(v.number)}</small></div></div>
+    ${(v.history || []).map(h => `<div class="bub in">${esc(h)}</div>`).join("")}
+    ${v.sent ? `<div class="bub out">${esc(v.draft)}</div><div class="dlv">Delivered ✓</div>` : ""}
+    <div class="compose ${v.sent || !v.draft ? "empty" : ""}">${v.sent || !v.draft ? "Text message" : esc(v.draft)}</div><div class="sendbtn">➤</div></div>`,
+  dd_home: v => `<div class="view dd">${sb(1)}<div class="ddh"><b>DoorDash</b><div class="search">🔍 ${esc(v.query || "")}<i></i>${v.query ? "" : '<span style="color:#999">Search restaurants</span>'}</div></div>
+    ${(v.results || DD_DEFAULT).map((s, i) => `<div class="store ${s.hit ? "hit" : ""}" style="animation-delay:${i * 80}ms"><div class="thumb">${EMOJI[s.name] || "🍽️"}</div><div><b>${esc(s.name)}</b><small>★ ${esc(s.rating)} · ${esc(s.eta)} · $0 delivery fee over $12</small></div></div>`).join("")}</div>`,
+  dd_menu: v => `<div class="view dd">${sb(1)}<div class="hero">${EMOJI[v.store] || "🍽️"}</div><div class="sname">${esc(v.store)}</div><div class="smeta">★ ${esc(v.rating)} · ${esc(v.eta)} · DashPass</div>
+    ${v.items.map(d => `<div class="dish"><div>${esc(d.name)}<small>$${d.price.toFixed(2)}</small></div><div class="add ${v.added.includes(d.name) ? "on" : ""}">${v.added.includes(d.name) ? "✓" : "+"}</div></div>`).join("")}
+    <div class="ddbar ${v.added.length ? "" : "off"}">View cart · ${v.added.length} item${v.added.length === 1 ? "" : "s"}</div></div>`,
+  dd_cart: v => `<div class="view dd">${sb(1)}<div class="co"><h4>Checkout</h4><div class="addr">📍 Deliver to <b>Office · 500 Howard St</b><br>⏱ ${esc(v.eta)}</div>
+    ${v.lines.map(([d, q, p]) => `<div class="ln"><span>${q}× ${esc(d)}</span><span>$${(q * p).toFixed(2)}</span></div>`).join("")}
+    ${v.fees.map(([k, f]) => `<div class="ln f"><span>${esc(k)}</span><span>$${f.toFixed(2)}</span></div>`).join("")}
+    <div class="ln t"><span>Total</span><span>$${v.total.toFixed(2)}</span></div></div><div class="ddbar">Place order · $${v.total.toFixed(2)}</div></div>`,
+  dd_placed: v => `<div class="view placed">${sb(1)}<div class="dtop"><div class="tick">✓</div><b>Order placed!</b><div style="opacity:.9;font-size:3.6cqw;margin-top:1cqh">${esc(v.store)} · ${esc(v.total)}</div></div>
+    <div style="margin-top:4cqh;color:#666;font-size:3.4cqw">Estimated arrival</div><div class="eta">${esc(v.eta)}</div>
+    <div class="trackbar"><i></i></div><div class="track"><span class="on">Confirmed</span><span>Preparing</span><span>On the way</span></div>
+    <div style="margin-top:4cqh;font-size:3.4cqw;color:#444">${esc((v.items || []).join(" · "))}</div></div>`,
 };
+const EMOJI = {"Thai Basil": "🍜", "Sweetgreen": "🥗", "Chipotle": "🌯", "Tony's Pizza": "🍕"};
+const DD_DEFAULT = [{name: "Thai Basil", rating: "4.7", eta: "25–35 min"}, {name: "Sweetgreen", rating: "4.6", eta: "15–25 min"}, {name: "Tony's Pizza", rating: "4.8", eta: "30–40 min"}];
 
 function showScreen(v) {
   const f = VIEWS[v.view]; if (!f) return;
@@ -363,6 +474,59 @@ audio.ontimeupdate = () => {
 })();
 function autoplay() { if (!autoplayed && audio.src) { autoplayed = true; audio.currentTime = 0; audio.play().catch(() => {}); } }
 
+// ── ask / act ───────────────────────────────────────────
+const DEFAULT_CHIPS = ["Reply to Dana: On it, you'll have it before 2pm", "Order pad thai from Thai Basil on DoorDash"];
+let typingEl = null;
+function chat(cls, html) {
+  const c = $("#chat"); c.querySelector(".muted")?.remove();
+  const d = document.createElement("div"); d.className = cls; d.innerHTML = html; c.appendChild(d); c.scrollTop = c.scrollHeight; return d;
+}
+function setTyping(on, label = "working the phone") {
+  typingEl?.remove(); typingEl = on ? chat("typing", esc(label)) : null;
+}
+function setChips(list) {
+  $("#chips").innerHTML = ""; list.forEach(t => { const b = document.createElement("button"); b.textContent = t; b.onclick = () => sendCmd(t); $("#chips").appendChild(b); });
+}
+async function sendCmd(text) {
+  text = text.trim(); if (!text) return;
+  chat("msg me", esc(text)); $("#ask").value = "";
+  const r = await fetch("/command", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text, mode})});
+  if (r.status === 409) chat("msg bot", "I'm still finishing the current task — give me a second.");
+}
+$("#askf").onsubmit = e => { e.preventDefault(); sendCmd($("#ask").value); };
+setChips(DEFAULT_CHIPS);
+function renderConfirm(ev) {
+  const rows = (ev.lines || []).map(([k, v]) => v === "" || (k === "Message")
+    ? (k === "Message" ? `<tr><td colspan="2" class="full">“${esc(v)}”</td></tr>` : `<tr><td colspan="2" class="full">${esc(k)}</td></tr>`)
+    : `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("");
+  const el = chat("confirm", `<div class="ct">${esc(ev.title)}</div><table>${rows}${ev.total ? `<tr class="tot"><td>Total</td><td>${esc(ev.total)}</td></tr>` : ""}</table>
+    ${ev.note ? `<div class="note">${esc(ev.note)}</div>` : ""}
+    <div class="btns"><button class="no">Cancel</button><button class="yes">${esc(ev.cta || "Confirm")}</button></div><div class="res"></div>`);
+  el.id = "cf-" + ev.id;
+  const answer = ok => fetch("/confirm", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({id: ev.id, ok})});
+  el.querySelector(".yes").onclick = () => answer(true);
+  el.querySelector(".no").onclick = () => answer(false);
+}
+const sayAudio = new Audio();
+function say(ev) {
+  const b = chat("msg bot", `${ev.url ? '<span class="spk">▶</span>' : ""}${esc(ev.text)}`);
+  if (ev.url) {
+    const play = () => { audio.pause(); sayAudio.src = ev.url; sayAudio.play().catch(() => {}); };
+    b.querySelector(".spk").onclick = play; play();
+  }
+}
+// voice input (Chrome Web Speech API)
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) { $("#mic").style.opacity = .4; $("#mic").title = "Voice input needs Chrome"; }
+$("#mic").onclick = () => {
+  if (!SR) return;
+  const rec = new SR(); rec.lang = "en-US"; rec.interimResults = true;
+  $("#mic").classList.add("rec");
+  rec.onresult = e => { const r = e.results[e.results.length - 1]; $("#ask").value = r[0].transcript; if (r.isFinal) sendCmd(r[0].transcript); };
+  rec.onend = rec.onerror = () => $("#mic").classList.remove("rec");
+  rec.start();
+};
+
 // ── event stream ────────────────────────────────────────
 const es = new EventSource("/events");
 es.onmessage = e => {
@@ -393,6 +557,25 @@ es.onmessage = e => {
     case "delivered":
       $("#deliv").innerHTML = ev.modes.length ? ev.modes.map(m => `<span class="pill">✓ ${esc(m)}</span>`).join("") : '<span class="muted">nothing delivered</span>';
       autoplay(); break;
+    case "suggestions": setChips(ev.items); break;
+    case "action_start":
+      coord = ev.coord; $("#max").textContent = ev.max_steps; setBudget(0, ev.max_steps); errs = 0; $("#errs").textContent = 0; running = {};
+      t0 = performance.now(); clearInterval(timer);
+      timer = setInterval(() => $("#clock").textContent = ((performance.now() - t0) / 1000).toFixed(1) + "s", 100);
+      $("#run").disabled = true; $("#phone").classList.add("active");
+      setStat((ev.backend === "phoneuse" ? "live · PhoneUse Pixel" : "mock phone") + " · acting", true);
+      setTyping(true); break;
+    case "confirm": setTyping(false); renderConfirm(ev); setStat("waiting for you", true); break;
+    case "confirm_resolved": {
+      const el = $("#cf-" + ev.id); if (el) { el.classList.add("done"); const r = el.querySelector(".res");
+        r.textContent = ev.ok ? "✓ Confirmed" : "✕ Cancelled"; r.style.color = ev.ok ? "var(--ok)" : "var(--muted)"; }
+      setTyping(true, ev.ok ? "on it" : "backing out"); setStat("acting", true); break;
+    }
+    case "say": setTyping(false); say(ev); break;
+    case "action_done":
+      setTyping(false); clearInterval(timer); $("#run").disabled = false; $("#phone").classList.remove("active");
+      setStat(`ready · last action ${ev.used}/${ev.max} steps`, false); $("#cap").textContent = "done";
+      break;
     case "done":
       clearInterval(timer); $("#run").disabled = false; $("#phone").classList.remove("active");
       document.querySelectorAll(".ph").forEach(p => p.className = "ph done");

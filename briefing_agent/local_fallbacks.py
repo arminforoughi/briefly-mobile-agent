@@ -87,3 +87,23 @@ def kokoro_tts(script: str, out_base: Path, voice: str = "af_heart", speed: floa
     subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", str(wav), str(m4a)], check=True)
     wav.unlink(missing_ok=True)
     return m4a
+
+
+def ocr_find(img: bytes, word: str) -> tuple[int, int] | None:
+    """Locate a word inside OCR lines (Vision returns whole lines) → its center in the 0-1000 grid."""
+    import Vision
+    from Foundation import NSData
+
+    req = Vision.VNRecognizeTextRequest.alloc().init()
+    req.setRecognitionLevel_(Vision.VNRequestTextRecognitionLevelAccurate)
+    Vision.VNImageRequestHandler.alloc().initWithData_options_(
+        NSData.dataWithBytes_length_(img, len(img)), None).performRequests_error_([req], None)
+    for obs in req.results() or []:
+        text = str(obs.topCandidates_(1)[0].string())
+        i = text.lower().find(word.lower())
+        if i < 0:
+            continue
+        bb = obs.boundingBox()
+        frac = (i + len(word) / 2) / max(len(text), 1)
+        return int((bb.origin.x + bb.size.width * frac) * 1000), int((1 - (bb.origin.y + bb.size.height / 2)) * 1000)
+    return None

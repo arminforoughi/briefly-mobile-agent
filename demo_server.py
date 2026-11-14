@@ -17,6 +17,9 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+import uuid
+
+from briefing_agent.actions import run_action, suggest
 from briefing_agent.config import Config
 from briefing_agent.main import run_cycle
 
@@ -57,6 +60,7 @@ class Hub:
 
 
 HUB = Hub()
+PENDING: dict[str, asyncio.Future] = {}
 LOOP = asyncio.new_event_loop()
 threading.Thread(target=LOOP.run_forever, daemon=True).start()
 
@@ -71,10 +75,44 @@ def config_for(mode: str) -> tuple[Config, float]:
     return cfg, 0.9  # stage pacing so the audience can follow
 
 
+def listener(ev: dict) -> None:
+    HUB.publish(ev)
+    if ev.get("event") == "digest":
+        HUB.publish({"event": "suggestions", "items": suggest(ev.get("items", []))})
+
+
+async def confirm(payload: dict) -> bool:
+    """Human-in-the-loop gate: show a card in the dashboard and wait for Confirm / Cancel."""
+    cid = uuid.uuid4().hex[:8]
+    fut = LOOP.create_future()
+    PENDING[cid] = fut
+    HUB.publish({"event": "confirm", "id": cid, **payload})
+    try:
+        ok = await asyncio.wait_for(fut, timeout=180)
+    except asyncio.TimeoutError:
+        ok = False
+        HUB.publish({"event": "warn", "msg": "no answer in 3 minutes — cancelled"})
+    finally:
+        PENDING.pop(cid, None)
+    HUB.publish({"event": "confirm_resolved", "id": cid, "ok": ok})
+    return ok
+
+
+async def _act(mode: str, text: str) -> None:
+    cfg, pace = config_for(mode)
+    try:
+        await run_action(cfg, text, listener, confirm, pace=pace * 0.6)
+    except Exception as e:
+        HUB.publish({"event": "warn", "msg": f"action crashed: {e}"})
+        HUB.publish({"event": "action_done", "used": 0, "max": cfg.max_steps})
+    finally:
+        HUB.running = False
+
+
 async def _run(mode: str) -> None:
     cfg, pace = config_for(mode)
     try:
-        await run_cycle(cfg, 1, None, force=True, listener=HUB.publish, pace=pace)
+        await run_cycle(cfg, 1, None, force=True, listener=listener, pace=pace)
     except Exception as e:  # never kill the server mid-demo
         HUB.publish({"event": "warn", "msg": f"run crashed: {e}"})
         HUB.publish({"event": "done", "used": 0, "max": cfg.max_steps})
@@ -107,7 +145,31 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, f.read_bytes(), ctype)
         self._send(404, b"not found", "text/plain")
 
+    def _json(self) -> dict:
+        n = int(self.headers.get("Content-Length") or 0)
+        try:
+            return json.loads(self.rfile.read(n) or b"{}")
+        except json.JSONDecodeError:
+            return {}
+
     def do_POST(self):
+        if self.path.startswith("/command"):
+            body = self._json()
+            text = str(body.get("text", "")).strip()[:500]
+            if not text:
+                return self._send(400, b'{"error":"empty"}', "application/json")
+            if HUB.running:
+                return self._send(409, b'{"error":"busy"}', "application/json")
+            HUB.running = True
+            asyncio.run_coroutine_threadsafe(_act("live" if body.get("mode") == "live" else "mock", text), LOOP)
+            return self._send(202, b'{"ok":true}', "application/json")
+        if self.path.startswith("/confirm"):
+            body = self._json()
+            fut = PENDING.get(str(body.get("id")))
+            if fut and not fut.done():
+                LOOP.call_soon_threadsafe(lambda: fut.done() or fut.set_result(bool(body.get("ok"))))
+                return self._send(200, b'{"ok":true}', "application/json")
+            return self._send(404, b'{"error":"no such confirmation"}', "application/json")
         if self.path.startswith("/start"):
             mode = "live" if "mode=live" in self.path else "mock"
             if HUB.running:

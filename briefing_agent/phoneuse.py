@@ -248,6 +248,22 @@ class PhoneUseBackend(PhoneBackend):
     async def open_media(self, remote: str, mime: str = "audio/mpeg") -> str:
         raise NotImplementedError("PhoneUse has no file-push API")
 
+    async def clear_field(self, x: int, y: int) -> str:
+        """Empty a text field that already holds text: long-press → Select all → delete."""
+        from .local_fallbacks import ocr_find
+
+        await self._call("long_press", x=x, y=y, durationMs=900)
+        await asyncio.sleep(0.8)
+        data, _ = await self._screenshot()
+        pos = await asyncio.to_thread(ocr_find, base64.b64decode(data), "Select all")
+        if not pos:
+            await self._call("press_key", key="back")
+            return "no selection menu — left as is"
+        await self._call("tap", x=pos[0], y=pos[1])
+        await asyncio.sleep(0.4)
+        await self._call("press_key", key="delete")
+        return "cleared"
+
     async def agent_run(self, goal: str, max_steps: int = 25, timeout_s: int = 240) -> str:
         """Hand a natural-language goal to PhoneUse's hosted agent and wait (bounded) for it to finish."""
         run = await self._call("start_run", goal=goal, executor="phoneuse", maxSteps=max_steps,
