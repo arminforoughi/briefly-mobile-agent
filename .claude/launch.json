@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {"name": "briefly-demo", "runtimeExecutable": ".venv/bin/python", "runtimeArgs": ["-u", "demo_server.py"], "port": 8777}
+  ]
+}

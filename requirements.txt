@@ -1,0 +1,15 @@
+langchain>=1.0
+langchain-anthropic>=1.0
+langchain-mcp-adapters>=0.1.10
+langchain-tavily>=0.2
+elevenlabs>=2.0
+pydantic>=2.7
+python-dotenv>=1.0
+rich>=13.7
+# optional: real phone-call voice drop
+twilio>=9.0
+# keyless fallbacks
+ddgs>=9.0
+kokoro-onnx>=0.4
+soundfile>=0.12
+pyobjc-framework-Vision>=10.0; sys_platform == "darwin"
