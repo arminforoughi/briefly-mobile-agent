@@ -342,7 +342,7 @@ class ActionRunner:
 
 # ── one-shot entry point (used by the demo server) ──────────────────────────
 async def run_action(cfg: Config, text: str, listener, confirm: ConfirmFn, pace: float = 0.0) -> str | None:
-    from .pipeline import BriefingPipeline, make_llm
+    from .pipeline import BriefingPipeline, llm_status, make_llm
 
     run_id = "act-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     tracer = Tracer(cfg.runs_dir / run_id, max_steps=cfg.max_steps, pace=pace)
@@ -350,6 +350,9 @@ async def run_action(cfg: Config, text: str, listener, confirm: ConfirmFn, pace:
     tracer.emit("action_start", run_id=run_id, text=text, backend=cfg.phone_backend, max_steps=cfg.max_steps,
                 coord=[1000, 1000] if cfg.phone_backend == "phoneuse" else [1080, 2340])
     llm = make_llm(cfg)
+    if llm is None and llm_status(cfg):
+        tracer.warn(f"Claude unavailable ({llm_status(cfg)}) → keyless mode: rules + OCR + Kokoro")
+    tracer.emit("llm", name=cfg.model.split(":")[-1] if llm else "keyless (rules)")
     backend = make_backend(cfg, llm)
     if hasattr(backend, "shots_dir"):
         backend.shots_dir = tracer.run_dir / "screens"

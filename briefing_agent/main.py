@@ -8,7 +8,7 @@ from datetime import datetime
 
 from .config import Config
 from .phone import TracedPhone, make_backend
-from .pipeline import BriefingPipeline, SeenState, make_llm
+from .pipeline import BriefingPipeline, SeenState, llm_status, make_llm
 from .tracer import BudgetExceeded, Tracer
 
 
@@ -40,6 +40,9 @@ async def run_cycle(cfg: Config, cycle: int, state: SeenState | None, force: boo
         f"budget={cfg.max_steps} steps  deliver={','.join(cfg.deliver)}{'  DRY-RUN' if cfg.dry_run else ''}",
     )
     llm = make_llm(cfg)
+    if llm is None and llm_status(cfg):
+        tracer.warn(f"Claude unavailable ({llm_status(cfg)}) → keyless mode: rules + OCR + Kokoro")
+    tracer.emit("llm", name=cfg.model.split(":")[-1] if llm else "keyless (rules)")
     backend = make_backend(cfg, llm)
     if hasattr(backend, "shots_dir"):
         backend.shots_dir = tracer.run_dir / "screens"

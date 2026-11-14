@@ -68,12 +68,29 @@ class BriefResult:
 
 
 # ── LLM helpers ─────────────────────────────────────────────────────────────
+_LLM_PROBE: dict[str, str | None] = {}  # model → None (usable) or the reason it isn't
+
+
+def llm_status(cfg: Config) -> str | None:
+    """Why the configured LLM can't be used right now (no key, no credits, bad model…), or None if it can."""
+    return _LLM_PROBE.get(cfg.model)
+
+
 def make_llm(cfg: Config):
     if not cfg.llm_enabled:
         return None
     from langchain.chat_models import init_chat_model
 
-    return init_chat_model(cfg.model, temperature=0.2, max_retries=2, timeout=60)
+    llm = init_chat_model(cfg.model, max_retries=2, timeout=60)
+    if cfg.model not in _LLM_PROBE:  # one tiny call per process, so a dead key can't break a live demo
+        try:
+            llm.bind(max_tokens=1).invoke("ping")
+            _LLM_PROBE[cfg.model] = None
+        except Exception as e:
+            msg = str(getattr(e, "message", "") or e)
+            m = re.search(r"'message': '([^']+)'", msg)
+            _LLM_PROBE[cfg.model] = (m.group(1) if m else msg)[:140]
+    return None if _LLM_PROBE[cfg.model] else llm
 
 
 EXTRACT_PROMPT = """You are the triage brain of a mobile briefing agent. The user is away from their screen.

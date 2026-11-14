@@ -558,6 +558,7 @@ es.onmessage = e => {
       $("#deliv").innerHTML = ev.modes.length ? ev.modes.map(m => `<span class="pill">✓ ${esc(m)}</span>`).join("") : '<span class="muted">nothing delivered</span>';
       autoplay(); break;
     case "suggestions": setChips(ev.items); break;
+    case "llm": $("#llm").textContent = ev.name; break;
     case "action_start":
       coord = ev.coord; $("#max").textContent = ev.max_steps; setBudget(0, ev.max_steps); errs = 0; $("#errs").textContent = 0; running = {};
       t0 = performance.now(); clearInterval(timer);
