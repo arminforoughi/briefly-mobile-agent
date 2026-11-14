@@ -76,7 +76,21 @@ def parse_rules(text: str) -> Intent:
             items = [x.strip() for x in re.split(r",|\band\b", im.group(1))
                      if x.strip() and x.strip() not in ("lunch", "dinner", "food", "something", "doordash")]
         return Intent(kind="order_food", store=store, items=items)
-    m = re.match(r"^(?:reply|respond|text|message|tell|send)\s+(?:back\s+)?(?:to\s+)?(.+)$", t, re.I | re.S)
+    # 1) a known contact named anywhere ("Takes the Jordan guy that yes it's okay" — speech misheard "text")
+    hits = [(mm.start(), mm.end(), name) for key, (name, _) in CONTACTS.items()
+            for mm in [re.search(rf"\b{key}\b", low)] if mm]
+    if hits:
+        _, end, name = min(hits)
+        after = t[end:]
+        mk = re.search(r"^\W*:\s*(.+)$|^[\W_]*(?:(?:guy|girl|back|know|a message|a text)\b[\W_]*)*"
+                       r"(?:that|saying|say)\b[\s,:]*(.+)$", after, re.I | re.S)
+        body = (mk.group(1) or mk.group(2)) if mk else re.sub(
+            r"^[\W_]*(?:(?:guy|girl|back|know|a message|a text)\b[\W_]*)*", "", after, flags=re.I)
+        body = body.strip().strip("\"'“”")
+        return Intent(kind="send_message", recipient=name, body=(body[:1].upper() + body[1:]) if body else None)
+    # 2) explicit verb + number / unknown name ("text 415 555 0123 see you there")
+    m = re.match(r"^(?:(?:can you|please|hey)\s+)*(?:reply|respond|answer|text|texts|takes|tax|tex|message|tell|send|write)"
+                 r"\s+(?:back\s+)?(?:to\s+)?(?:the\s+)?(.+)$", t, re.I | re.S)
     if m:
         rest = m.group(1)
         num = re.match(r"^(\+?[\d\s()\-]{7,})[:,]?\s*(.*)$", rest, re.S)
